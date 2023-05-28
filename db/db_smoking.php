@@ -9,11 +9,12 @@ if($_POST["mode"] == "addSmoking"){
   
   $query = "INSERT INTO ";
   $query .= $wpdb->prefix ."tabacco_log "; 
-  $query .= "(tabacco_id, date, time) ";
+  $query .= "(tabacco_id, date, time, user_id) ";
   $query .= "values( ";
   $query .= "'" . $registData["id"] ."',";
   $query .= "sysdate(),";
-  $query .= "curtime()";
+  $query .= "curtime(),";
+  $query .= $_COOKIE["USER_ID"];
   $query .=")";
 }else if($_POST["mode"] == "addSmokingSelectDate"){
   $registData["id"] = $_POST["id"];
@@ -23,12 +24,13 @@ if($_POST["mode"] == "addSmoking"){
 
   $query = "INSERT INTO ";
   $query .= $wpdb->prefix ."tabacco_log "; 
-  $query .= "(tabacco_id, date, time, number) ";
+  $query .= "(tabacco_id, date, time, number, user_id) ";
   $query .= "values( ";
   $query .= "'" . $registData["id"] ."',";
   $query .= "'" . $registData["date"] . "',";
   $query .= "'" . $registData["time"] . "',";
-  $query .= $registData["number"];
+  $query .= $registData["number"] .",";
+  $query .= $_COOKIE["USER_ID"];
   $query .=")";
 }else if($_POST["mode"] == "delete"){
 	$registData["id"] = $_POST["id"];

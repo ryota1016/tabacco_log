@@ -1,7 +1,17 @@
+<?php
+if(!$_COOKIE["USER_ID"] || $_COOKIE["USER_ID"] == ""){
+	header("Location:login.php");
+	exit;
+}
+?>
 <html>
 <title>たばこ管理サイト</title>
 <h1 style="text-align:center;">たばこ管理サイト</h1>
-<div style="text-align:right;"><a href="regist.php">たばこ銘柄登録画面</a></div>
+<div style="text-align:right;">
+ようこそ<?php echo $_COOKIE["USER_NAME"]  ?>さん<br>
+<a href="regist.php">たばこ銘柄登録画面</a>
+<a href="javascript:logout();">ログアウト</a>
+</div>
 <?php
 include '../wp-load.php';
 
@@ -10,8 +20,11 @@ global $wpdb;
 ?>
 <div id="main_contents">
 <div>
-<h3>本日の喫煙本数</h3>
-<div id="today_sum_number"></div>
+	<h3>本日の喫煙本数</h3>
+	<div id="today_sum_number"></div>
+</div>
+<div id="error_message">
+<a href="regist.php">たばこ銘柄登録画面</a>からタバコの銘柄を登録してください。
 </div>
 <?php
 // たばこの銘柄セレクトボックス
@@ -19,16 +32,21 @@ $tabacco_id = array();
 $tabacco_name = array();
 $tabacco_cost = array();
 $query = "SELECT * FROM " . $wpdb->prefix . "tabacco_mst WHERE delete_flg = 0 ";
+$query .= "AND user_id =". $_COOKIE["USER_ID"];
 $tabaccoRows = $wpdb->get_results($query);
+echo "<select id=\"tabacco_select\">";
 if($tabaccoRows){
-	echo "<select id=\"tabacco_select\">";
     foreach ($tabaccoRows as $row) {
 		echo "<option value=\"" .$row->ID. "\">".$row->name."</option>";
 	}
-	echo "</select>";
 }
+echo "</select>";
 ?>
 <style type="text/css">
+#error_message{
+	visibility: hidden;
+	color: red;
+}
 #smoking_button{
 	width:20%;
 	height: 10%;
@@ -71,13 +89,13 @@ if($tabaccoRows){
 <div id="select_smoking_date_section">
 <h3>時間を指定して記録</h3>
 <?php
+echo "<select id=\"select_date_id\">";
 if($tabaccoRows){
-	echo "<select id=\"select_date_id\">";
     foreach ($tabaccoRows as $row) {
 		echo "<option value=\"" .$row->ID. "\">".$row->name."</option>";
 	}
-	echo "</select>";
 }
+echo "</select>";
 ?>
 <input type="date" id="select_date">
 <input type="time" id="select_time" value="00:00">
@@ -170,6 +188,11 @@ if($tabaccoRows){
     document.getElementById("select_date").value=yyyy+'-'+mm+'-'+dd;
 	getTodayLog();
     getTodayCalendar();
+	if(document.getElementById("tabacco_select").length == 0){
+		document.getElementById("smoking_button").disabled = true;
+		document.getElementById("select_smoking_button").disabled = true;
+		document.getElementById("error_message").style.visibility = "visible";
+	} 
 }());
 function getTodayCalendar(){
     var today = new Date();
@@ -319,5 +342,26 @@ function nextMonth(){
 		month = 1;
 	}
 	getCalendar(year, month);
+}
+function logout(){
+    var param = {};
+	param["command"] = "logout";
+
+	$.ajax({
+		url: "db/db_user.php",
+		type: "POST",
+		dataType:"json",
+		data: param,
+		async: false
+	}).done(function (r_data) {
+		console.log(r_data);
+		if(r_data["result"]){
+			window.location = "login.php";
+		}else{
+			alert("ログアウトに失敗しました。");
+		}
+	}).fail(function (jqXHR, textStatus, errorThrown) {
+		alert(errorThrown);
+	});
 }
 </script>

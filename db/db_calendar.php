@@ -10,6 +10,7 @@ $query .= $wpdb->prefix ."tabacco_log ";
 $query .=" INNER JOIN " . $wpdb->prefix . "tabacco_mst ON " . $wpdb->prefix ."tabacco_log.tabacco_id = " . $wpdb->prefix . "tabacco_mst.id ";
 $query .= " WHERE DATE_FORMAT(date, '%Y') =". $year;
 $query .= " AND DATE_FORMAT(date, '%c') =". $month;
+$query .= " AND " .$wpdb->prefix ."tabacco_log.user_id =" .$_COOKIE["USER_ID"];
 $query .= " GROUP BY DATE_FORMAT(date, '%d')";
 $logRows = $wpdb->get_results($query);
 $logArray = array();

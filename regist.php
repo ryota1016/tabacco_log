@@ -192,6 +192,7 @@ $tabacco_name = array();
 $tabacco_cost = array();
 
 $query = "SELECT * FROM " . $wpdb->prefix . "tabacco_mst WHERE delete_flg = 0 ";
+$query .= "AND user_id =". $_COOKIE["USER_ID"];
 
 $rows = $wpdb->get_results($query);
 if($rows){

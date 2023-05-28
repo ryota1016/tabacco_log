@@ -7,13 +7,15 @@ $returnData = array();
 if($_POST["mode"] == "insert"){
   $registData["name"] = $_POST["name"];
   $registData["cost"] = $_POST["cost"];
+  $registData["user_id"] = $_COOKIE["USER_ID"];
   
   $query = "INSERT INTO ";
   $query .= $wpdb->prefix ."tabacco_mst "; 
-  $query .= "(name, cost) ";
+  $query .= "(name, cost, user_id) ";
   $query .= "values( ";
   $query .= "'" . $registData["name"] ."',";
-  $query .= $registData["cost"];
+  $query .= $registData["cost"] .",";
+  $query .= $registData["user_id"];
   $query .=")";
 }else if($_POST["mode"] == "update"){
   $registData["id"] = $_POST["id"];
